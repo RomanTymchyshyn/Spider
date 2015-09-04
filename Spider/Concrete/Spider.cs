@@ -13,7 +13,8 @@ namespace Spider.Concrete
 {
     public class SearchEngine
     {
-//        private ManualResetEvent _pause = new ManualResetEvent(false);
+        private object _syncObject = new Object();
+        private bool _paused = false;
         private CancellationTokenSource _cancellationTokenSource;
 
         private readonly ConcurrentQueue<string> taskQ = new ConcurrentQueue<string>();
@@ -118,8 +119,7 @@ namespace Spider.Concrete
 
         private bool BrowsePage(string url, string textToFind)
         {
-//            Interlocked.Increment(ref runningTasks);
-
+            lock (_syncObject) { }
             var contentLoader = new ContentLoader();
             var parser = new RegExBasedHtmlParser();
 
@@ -139,6 +139,24 @@ namespace Spider.Concrete
             result.Links.ForEach(link=>taskQ.Enqueue(link));
 
             return result.Found;
+        }
+
+        public void Pause()
+        {
+            if (_paused == false)
+            {
+                Monitor.Enter(_syncObject);
+                _paused = true;
+            }
+        }
+
+        public void Resume()
+        {
+            if (_paused)
+            {
+                Monitor.Exit(_syncObject);
+                _paused = false;
+            }
         }
     }
 }

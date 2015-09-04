@@ -47,6 +47,7 @@
             this.completedLabel = new System.Windows.Forms.Label();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.progressBarBackgroundWorker = new System.ComponentModel.BackgroundWorker();
+            this.resumeButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // startButton
@@ -177,6 +178,7 @@
             this.pauseButton.TabIndex = 12;
             this.pauseButton.Text = "Pause";
             this.pauseButton.UseVisualStyleBackColor = true;
+            this.pauseButton.Click += new System.EventHandler(this.pauseButton_Click);
             // 
             // exitButton
             // 
@@ -230,11 +232,23 @@
             this.progressBarBackgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DoWork);
             this.progressBarBackgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker_ProgressChanged);
             // 
+            // resumeButton
+            // 
+            this.resumeButton.Location = new System.Drawing.Point(259, 431);
+            this.resumeButton.Name = "resumeButton";
+            this.resumeButton.Size = new System.Drawing.Size(75, 23);
+            this.resumeButton.TabIndex = 18;
+            this.resumeButton.Text = "Resume";
+            this.resumeButton.UseVisualStyleBackColor = true;
+            this.resumeButton.Visible = false;
+            this.resumeButton.Click += new System.EventHandler(this.resumeButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(867, 466);
+            this.Controls.Add(this.resumeButton);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.completedLabel);
             this.Controls.Add(this.resultsTextBox);
@@ -281,6 +295,7 @@
         private System.Windows.Forms.Label completedLabel;
         private System.Windows.Forms.ProgressBar progressBar;
         private System.ComponentModel.BackgroundWorker progressBarBackgroundWorker;
+        private System.Windows.Forms.Button resumeButton;
     }
 }
 

@@ -171,5 +171,17 @@ namespace Spider
         {
             _spider.CancelPreviousBrowsing();
         }
+
+        private void resumeButton_Click(object sender, EventArgs e)
+        {
+            _spider.Resume();
+            resumeButton.Visible = false;
+        }
+
+        private void pauseButton_Click(object sender, EventArgs e)
+        {
+            _spider.Pause();
+            resumeButton.Visible = true;
+        }
     }
 }
