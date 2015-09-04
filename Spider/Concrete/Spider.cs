@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Runtime.Remoting.Channels;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using Spider.Abstract;
-using Spider.Service;
 
 namespace Spider.Concrete
 {
@@ -77,9 +72,9 @@ namespace Spider.Concrete
             
             Interlocked.Exchange(ref processedTasks, 0);
 
-            LimitedConcurrencyLevelTaskScheduler lcts = new LimitedConcurrencyLevelTaskScheduler(nThreads);
+            LimitedConcurrencyLevelTaskScheduler taskScheduler = new LimitedConcurrencyLevelTaskScheduler(nThreads);
 
-            factory = new TaskFactory(lcts);
+            factory = new TaskFactory(taskScheduler);
 
             int browsedUrls = 0;
             

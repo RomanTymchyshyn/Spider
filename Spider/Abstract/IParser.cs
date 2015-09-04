@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Spider.Service;
+﻿using Spider.Service;
 
 namespace Spider.Abstract
 {

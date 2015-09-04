@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Spider.Abstract;
-using System.Linq;
 using Spider.Service;
 
 namespace Spider.Concrete
 {
     public class RegExBasedHtmlParser: IParser
     {
-        //private const string _linkPattern1 = @"http(s)?://[A-Za-z0-9-._~:/?#\]\[@!$&'()*+,;=]+";//@"http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?";
         private const string _linkPattern = @"http(s)?://([\w-]+\.)+[\w-]+((/|\?)[]\w-./?%&=#,[@!$_~:-]*)?";
 
         public ParsingResult Parse(string html, string textToFind)
