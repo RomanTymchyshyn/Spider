@@ -67,6 +67,7 @@
     <Compile Include="Service\INotifier.cs" />
     <Compile Include="Service\ConfigurableNotifier.cs" />
     <Compile Include="Parsers\ParsingResult.cs" />
+    <Compile Include="Utilities\ConcurrentHashSet.cs" />
     <EmbeddedResource Include="DialogBox.resx">
       <DependentUpon>DialogBox.cs</DependentUpon>
     </EmbeddedResource>

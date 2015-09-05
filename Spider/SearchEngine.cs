@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Spider.Loaders;
 using Spider.Parsers;
 using Spider.Service;
+using Spider.Utilities;
 
 namespace Spider
 {
@@ -41,6 +42,8 @@ namespace Spider
         private CancellationTokenSource _cancellationTokenSource;
 
         private ConcurrentQueue<string> _taskQ;
+
+        private ConcurrentHashSet<string> _uniqueLinks;
 
         private TaskFactory _factory;
 
@@ -104,7 +107,13 @@ namespace Spider
 
             var result = parser.Parse(content, textToFind);
 
-            result.Links.ForEach(link => _taskQ.Enqueue(link));
+            result.Links.ForEach(link =>
+            {
+                if (_uniqueLinks.Add(link))
+                {
+                    _taskQ.Enqueue(link);
+                }
+            });
 
             return result.Found;
         }
@@ -117,6 +126,7 @@ namespace Spider
         {
             _cancellationTokenSource = new CancellationTokenSource();
             _taskQ = new ConcurrentQueue<string>();
+            _uniqueLinks = new ConcurrentHashSet<string>();
 
             Interlocked.Exchange(ref _processedTasks, 0);
             Interlocked.Exchange(ref _currentlyRunningTasks, 0);
