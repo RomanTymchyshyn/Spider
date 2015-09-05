@@ -41,6 +41,32 @@ namespace Spider
             completedLabel.Text = "";
             resultsTextBox.Text = "";
 
+            int nThreads;
+            if (!int.TryParse(nThreadsTextBox.Text, out nThreads) || nThreads < 1)
+            {
+                using (DialogBox dialogBox = new DialogBox("Number of threads should be positive integer"))
+                {
+                    dialogBox.ShowDialog();
+                    nThreadsTextBox.Text = "";
+                    nThreadsTextBox.Focus();
+                    return;
+                }
+            }
+
+            int nUrls;
+            if (!int.TryParse(nUrlsTextBox.Text, out nUrls) || nUrls < 1)
+            {
+                using (DialogBox dialogBox = new DialogBox("Number of urls should be positive integer"))
+                {
+                    dialogBox.ShowDialog();
+                    nUrlsTextBox.Text = "";
+                    nUrlsTextBox.Focus();
+                    return;
+                }
+            }
+
+            startButton.Enabled = false;
+//            while (progressBarBackgroundWorker.CancellationPending) ;
             progressBarBackgroundWorker.RunWorkerAsync();
         }
 
@@ -67,6 +93,25 @@ namespace Spider
         private void backgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             progressBar.Value = e.ProgressPercentage;
+        }
+
+        private void stopButton_Click(object sender, EventArgs e)
+        {
+            _spider.CancelPreviousBrowsing();
+//            progressBarBackgroundWorker.CancelAsync();
+            startButton.Enabled = true;
+        }
+
+        private void resumeButton_Click(object sender, EventArgs e)
+        {
+            _spider.Resume();
+            resumeButton.Visible = false;
+        }
+
+        private void pauseButton_Click(object sender, EventArgs e)
+        {
+            _spider.Pause();
+            resumeButton.Visible = true;
         }
 
         private void startUrlTextBox_MouseUp(object sender, MouseEventArgs e)
@@ -164,23 +209,6 @@ namespace Spider
         private void exitButton_Click(object sender, EventArgs e)
         {
             Application.Exit();
-        }
-
-        private void stopButton_Click(object sender, EventArgs e)
-        {
-            _spider.CancelPreviousBrowsing();
-        }
-
-        private void resumeButton_Click(object sender, EventArgs e)
-        {
-            _spider.Resume();
-            resumeButton.Visible = false;
-        }
-
-        private void pauseButton_Click(object sender, EventArgs e)
-        {
-            _spider.Pause();
-            resumeButton.Visible = true;
         }
     }
 }
