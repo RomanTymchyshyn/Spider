@@ -19,7 +19,6 @@ namespace Spider
         public Form1()
         {
             InitializeComponent();
-            var obj = new Object();
             INotifier notifier = new ConfigurableNotifier((notification) =>
                 {
                     progressTextBox.BeginInvoke((MethodInvoker)(() => progressTextBox.AppendText(notification)));
@@ -66,7 +65,6 @@ namespace Spider
             }
 
             startButton.Enabled = false;
-//            while (progressBarBackgroundWorker.CancellationPending) ;
             progressBarBackgroundWorker.RunWorkerAsync();
         }
 
@@ -98,7 +96,6 @@ namespace Spider
         private void stopButton_Click(object sender, EventArgs e)
         {
             _spider.CancelPreviousBrowsing();
-//            progressBarBackgroundWorker.CancelAsync();
             startButton.Enabled = true;
         }
 

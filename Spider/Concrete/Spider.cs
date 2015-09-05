@@ -8,44 +8,60 @@ namespace Spider.Concrete
 {
     public class SearchEngine
     {
-        private object _syncObject = new Object();
-        private bool _paused = false;
-        private CancellationTokenSource _cancellationTokenSource;
 
-        private readonly ConcurrentQueue<string> taskQ = new ConcurrentQueue<string>();
-        
+        #region Private Fields
+
         private readonly string StartedLoadingContentMessage = 
             "Loading content from URL:\n{0}...\n".Replace("\n", Environment.NewLine);
+
         private readonly string FinishedLoadingContentMessage = 
             "Loaded content from URL:\n{0}\n".Replace("\n", Environment.NewLine);
+
         private readonly string StartedParsingMessage = 
             "Parsing content of URL:\n{0}...\n".Replace("\n", Environment.NewLine);
+
         private readonly string CompletedMessage = 
             "Processing URL:\n{0}\n completed! \n Was text  found on this page? - {1}\n".Replace("\n", Environment.NewLine);
+
         private readonly string ErrorMessage =
             "Processing URL:\n{0}\n was FAULTED!!! \n ERRORS: \n".Replace("\n", Environment.NewLine);
+
         private readonly string CancelledMessage =
             "Processing URL:\n{0}\n was cancelled!!!\n".Replace("\n", Environment.NewLine);
 
-        private TaskFactory factory;
+        private int _currentlyRunningTasks;
+        private int _processedTasks;
 
-        private int runningTasks = 0;
-        private int processedTasks = 0;
+        private bool _paused;
+        private readonly object _syncObject = new Object();
 
+        private CancellationTokenSource _cancellationTokenSource;
+
+        private ConcurrentQueue<string> _taskQ;
+
+        private TaskFactory _factory;
 
         private readonly INotifier _notifier;
+
+        #endregion
+
+        #region CTORS
 
         public SearchEngine(INotifier notifier)
         {
             _notifier = notifier;
         }
 
+        #endregion
+
+        #region Private Methods
+
         private void TaskCompletedHandler(Task<bool> t, int nUrls)
         {
             string message;
             if (t.IsFaulted)
             {
-                message = string.Format(ErrorMessage, (string) t.AsyncState);
+                message = string.Format(ErrorMessage, (string)t.AsyncState);
                 t.Exception.Handle(inner => true);
                 foreach (var ex in t.Exception.InnerExceptions)
                 {
@@ -54,62 +70,16 @@ namespace Spider.Concrete
             }
             else if (t.IsCanceled)
             {
-                message = string.Format(CancelledMessage, (string) t.AsyncState);
+                message = string.Format(CancelledMessage, (string)t.AsyncState);
             }
             else
             {
                 message = string.Format(CompletedMessage, (string)t.AsyncState, t.Result);
             }
-            Interlocked.Decrement(ref runningTasks);
-            Interlocked.Increment(ref processedTasks);
-            _notifier.ReporProgress(processedTasks * 100 / nUrls);
-            _notifier.NotifyCompleted(processedTasks + ". " + message);
-        }
-
-        public void BrowseNet(string startUrl, string textToFind, int nThreads, int nUrls)
-        {
-            _cancellationTokenSource = new CancellationTokenSource();
-            
-            Interlocked.Exchange(ref processedTasks, 0);
-
-            LimitedConcurrencyLevelTaskScheduler taskScheduler = new LimitedConcurrencyLevelTaskScheduler(nThreads);
-
-            factory = new TaskFactory(taskScheduler);
-
-            int browsedUrls = 0;
-            
-            taskQ.Enqueue(startUrl);
-            var tasksList = new List<Task>();
-
-            do
-            {
-                string nextUrl;
-                if (taskQ.TryDequeue(out nextUrl))
-                {
-                    var task = factory.StartNew((stateObject) => BrowsePage((string)stateObject, textToFind), 
-                        nextUrl, 
-                        _cancellationTokenSource.Token);
-                    Interlocked.Increment(ref runningTasks);
-                    ++browsedUrls;
-                    task.ContinueWith((t)=>TaskCompletedHandler(t, nUrls));
-                    tasksList.Add(task);
-                }
-            } while (browsedUrls < nUrls && runningTasks != 0 && !_cancellationTokenSource.IsCancellationRequested);
-
-            try
-            {
-                Task.WaitAll(tasksList.ToArray());
-            }
-            catch (AggregateException ex)
-            {
-                ex.Handle((inner) => true);
-            }
-        }
-
-        public void CancelPreviousBrowsing()
-        {
-            _cancellationTokenSource.Cancel();
-            _cancellationTokenSource.Dispose();
+            Interlocked.Decrement(ref _currentlyRunningTasks);
+            Interlocked.Increment(ref _processedTasks);
+            _notifier.ReporProgress(_processedTasks * 100 / nUrls);
+            _notifier.NotifyCompleted(_processedTasks + ". " + message);
         }
 
         private bool BrowsePage(string url, string textToFind)
@@ -131,9 +101,61 @@ namespace Spider.Concrete
 
             var result = parser.Parse(content, textToFind);
 
-            result.Links.ForEach(link=>taskQ.Enqueue(link));
+            result.Links.ForEach(link => _taskQ.Enqueue(link));
 
             return result.Found;
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        public void BrowseNet(string startUrl, string textToFind, int nThreads, int nUrls)
+        {
+            _cancellationTokenSource = new CancellationTokenSource();
+            _taskQ = new ConcurrentQueue<string>();
+
+            Interlocked.Exchange(ref _processedTasks, 0);
+            Interlocked.Exchange(ref _currentlyRunningTasks, 0);
+
+            LimitedConcurrencyLevelTaskScheduler taskScheduler = new LimitedConcurrencyLevelTaskScheduler(nThreads);
+
+            _factory = new TaskFactory(taskScheduler);
+
+            int browsedUrls = 0;
+
+            _taskQ.Enqueue(startUrl);
+            var tasksList = new List<Task>();
+
+            do
+            {
+                string nextUrl;
+                if (_taskQ.TryDequeue(out nextUrl))
+                {
+                    var task = _factory.StartNew((stateObject) => BrowsePage((string)stateObject, textToFind),
+                        nextUrl,
+                        _cancellationTokenSource.Token);
+                    Interlocked.Increment(ref _currentlyRunningTasks);
+                    ++browsedUrls;
+                    task.ContinueWith((t) => TaskCompletedHandler(t, nUrls));
+                    tasksList.Add(task);
+                }
+            } while (browsedUrls < nUrls && _currentlyRunningTasks != 0 && !_cancellationTokenSource.IsCancellationRequested);
+
+            try
+            {
+                Task.WaitAll(tasksList.ToArray());
+            }
+            catch (AggregateException ex)
+            {
+                ex.Handle((inner) => true);
+            }
+        }
+
+        public void CancelPreviousBrowsing()
+        {
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Dispose();
         }
 
         public void Pause()
@@ -153,5 +175,8 @@ namespace Spider.Concrete
                 _paused = false;
             }
         }
+
+        #endregion
+
     }
 }
