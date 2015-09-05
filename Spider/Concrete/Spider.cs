@@ -94,7 +94,7 @@ namespace Spider.Concrete
                     task.ContinueWith((t)=>TaskCompletedHandler(t, nUrls));
                     tasksList.Add(task);
                 }
-            } while (browsedUrls < nUrls && runningTasks != 0);
+            } while (browsedUrls < nUrls && runningTasks != 0 && !_cancellationTokenSource.IsCancellationRequested);
 
             try
             {
