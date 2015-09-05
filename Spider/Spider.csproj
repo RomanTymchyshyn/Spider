@@ -50,6 +50,12 @@
     <Compile Include="Concrete\LimitedTaskScheduler.cs" />
     <Compile Include="Concrete\RegExBasedHtmlParser.cs" />
     <Compile Include="Concrete\Spider.cs" />
+    <Compile Include="DialogBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DialogBox.Designer.cs">
+      <DependentUpon>DialogBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -61,6 +67,9 @@
     <Compile Include="Service\INotifier.cs" />
     <Compile Include="Service\ConfigurableNotifier.cs" />
     <Compile Include="Service\ParsingResult.cs" />
+    <EmbeddedResource Include="DialogBox.resx">
+      <DependentUpon>DialogBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
       <SubType>Designer</SubType>
