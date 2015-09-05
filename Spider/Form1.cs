@@ -100,10 +100,14 @@ namespace Spider
             progressBar.Value = e.ProgressPercentage;
         }
 
+        private void progressBarBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            startButton.Enabled = true;
+        }
+
         private void stopButton_Click(object sender, EventArgs e)
         {
             _spider.CancelPreviousBrowsing();
-            startButton.Enabled = true;
             stopButton.Enabled = false;
             pauseButton.Enabled = false;
             resumeButton.Visible = false;

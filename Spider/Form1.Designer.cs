@@ -233,6 +233,7 @@
             this.progressBarBackgroundWorker.WorkerSupportsCancellation = true;
             this.progressBarBackgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DoWork);
             this.progressBarBackgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker_ProgressChanged);
+            this.progressBarBackgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.progressBarBackgroundWorker_RunWorkerCompleted);
             // 
             // resumeButton
             // 
