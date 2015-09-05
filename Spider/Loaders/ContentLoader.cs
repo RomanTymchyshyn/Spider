@@ -1,7 +1,6 @@
 ﻿using System.Net;
-using Spider.Abstract;
 
-namespace Spider.Concrete
+namespace Spider.Loaders
 {
     class ContentLoader: IContentLoader
     {

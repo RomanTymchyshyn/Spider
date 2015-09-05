@@ -1,4 +1,4 @@
-﻿namespace Spider
+﻿namespace Spider.Service
 {
     public interface INotifier
     {

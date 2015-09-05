@@ -40,6 +40,9 @@ namespace Spider
             completedLabel.Text = "";
             resultsTextBox.Text = "";
 
+            pauseButton.Enabled = true;
+            stopButton.Enabled = true;
+
             int nThreads;
             if (!int.TryParse(nThreadsTextBox.Text, out nThreads) || nThreads < 1)
             {
@@ -65,6 +68,7 @@ namespace Spider
             }
 
             startButton.Enabled = false;
+            while (progressBarBackgroundWorker.CancellationPending || progressBarBackgroundWorker.IsBusy) { }
             progressBarBackgroundWorker.RunWorkerAsync();
         }
 
@@ -83,6 +87,7 @@ namespace Spider
                     {
                         completedLabel.BeginInvoke((MethodInvoker) (() => completedLabel.Text = "COMPLETED"));
                         progressBarBackgroundWorker.ReportProgress(100);
+                        startButton.BeginInvoke((MethodInvoker)(() => startButton.Enabled = true));
                     });
 
             mainTask.Wait();
@@ -97,18 +102,23 @@ namespace Spider
         {
             _spider.CancelPreviousBrowsing();
             startButton.Enabled = true;
+            stopButton.Enabled = false;
+            pauseButton.Enabled = false;
+            resumeButton.Visible = false;
         }
 
         private void resumeButton_Click(object sender, EventArgs e)
         {
             _spider.Resume();
             resumeButton.Visible = false;
+            pauseButton.Enabled = true;
         }
 
         private void pauseButton_Click(object sender, EventArgs e)
         {
             _spider.Pause();
             resumeButton.Visible = true;
+            pauseButton.Enabled = false;
         }
 
         private void startUrlTextBox_MouseUp(object sender, MouseEventArgs e)

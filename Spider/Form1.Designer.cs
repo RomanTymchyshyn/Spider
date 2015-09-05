@@ -162,6 +162,7 @@
             // 
             // stopButton
             // 
+            this.stopButton.Enabled = false;
             this.stopButton.Location = new System.Drawing.Point(96, 431);
             this.stopButton.Name = "stopButton";
             this.stopButton.Size = new System.Drawing.Size(75, 23);
@@ -172,6 +173,7 @@
             // 
             // pauseButton
             // 
+            this.pauseButton.Enabled = false;
             this.pauseButton.Location = new System.Drawing.Point(177, 431);
             this.pauseButton.Name = "pauseButton";
             this.pauseButton.Size = new System.Drawing.Size(75, 23);

@@ -1,4 +1,4 @@
-﻿namespace Spider.Abstract
+﻿namespace Spider.Loaders
 {
     public interface IContentLoader
     {

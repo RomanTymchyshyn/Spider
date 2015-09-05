@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Spider.Concrete
+namespace Spider
 {
     public class LimitedConcurrencyLevelTaskScheduler : TaskScheduler
     {

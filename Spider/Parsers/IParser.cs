@@ -1,6 +1,4 @@
-﻿using Spider.Service;
-
-namespace Spider.Abstract
+﻿namespace Spider.Parsers
 {
     public interface IParser
     {

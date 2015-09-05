@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Spider.Abstract;
-using Spider.Service;
 
-namespace Spider.Concrete
+namespace Spider.Parsers
 {
     public class RegExBasedHtmlParser: IParser
     {
