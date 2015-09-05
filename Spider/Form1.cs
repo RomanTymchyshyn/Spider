@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Spider.Concrete;
+using Spider.Service;
 
 namespace Spider
 {
@@ -88,6 +88,8 @@ namespace Spider
                         completedLabel.BeginInvoke((MethodInvoker) (() => completedLabel.Text = "COMPLETED"));
                         progressBarBackgroundWorker.ReportProgress(100);
                         startButton.BeginInvoke((MethodInvoker)(() => startButton.Enabled = true));
+                        pauseButton.BeginInvoke((MethodInvoker)(() => pauseButton.Enabled = false));
+                        pauseButton.BeginInvoke((MethodInvoker)(() => pauseButton.Enabled = false));
                     });
 
             mainTask.Wait();
